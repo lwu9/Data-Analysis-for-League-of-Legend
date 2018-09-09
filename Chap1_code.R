@@ -16,7 +16,8 @@ plot(0:10, count/2^10, main="Probability Mass Function",xlab="k",ylab="P(k yello
 points(0:10, count/2^10, col=2)
 dev.off()
 
-## Figure 1.3: PMF and CDF plots for Hypergoemetric distribution.
+
+## Figure 1.4: PMF and CDF plots for Hypergoemetric distribution.
 setEPS()
 postscript("pmfcdf_HG.eps",width = 11, height = 6)
 # The following puts two graphs side by side.
@@ -35,7 +36,8 @@ plot(0:10, cumsum(dhyper(0:10, 10, 10, 10)),
      main="CDF",xlab="x",ylab="F(x)", type="s", lwd=2)
 dev.off()
 
-##  Figure 1.4: PMF and CDF plots for Binomial distribution.
+
+##  Figure 1.5: PMF and CDF plots for Binomial distribution.
 setEPS()
 postscript("pmfcdf_bin.eps",width = 11, height = 6)
 par(mfrow = c(1, 2))
@@ -50,6 +52,78 @@ plot(0:20, cumsum(dbinom(0:20, 20, 0.5)),
 dev.off()
 
 
+## Figure 1.6: plot of Law of large number.
+# Read in data
+kill_count_data = read.csv('/Users/lili/Documents/labproject2017/Doran/kill_count_list.csv')
+# Take means for increasing sample size
+sample_sizes_for_means = 1:20000
+# Collect means up to each sample size
+list_of_means = c()
+for(n in sample_sizes_for_means){
+  # For each sample size increasing from 1 to 20000, calculate the corresponding sample mean
+  mean_up_to_n = mean(kill_count_data[1:n,1])
+  list_of_means = c(list_of_means, mean_up_to_n)
+}
+# You can also use function--"cumsum" to the above for-loop to speed up
+setEPS()
+postscript("sample_mean.eps",width = 5, height = 5)
+# Plot sample mean agains sample size
+plot(sample_sizes_for_means, list_of_means, type="l", 
+     xlab="Sample size", ylab="Sample mean", main="Sample mean of Kill count")
+dev.off()
+
+
+## Figure 1.7: Plots of comparing variances of two random varibles
+setEPS()
+postscript("vars.eps",width = 11, height = 6)
+par(mfrow = c(1, 2))
+# Design probabilities for each value of a random variable by hand
+pp = c(1:10,11,10:1); prob=pp/sum(pp)
+# Design two random variables x1 and x2 by hand to make x1 more spread out than x2.
+x1 = c(-(10:1),0:10)*2; x2 = x1/2
+plot(x1, prob, main="PMF",xlab="x",ylab="p(x)", 
+     type="h", lwd=2)
+plot(x2, prob, main="PMF",xlab="x",ylab="p(x)", 
+     xlim=c(-20,20),type="h", lwd=2)
+dev.off()
+# Calculate variances for the above two random variables using variance formula
+var1 = sum((x1 - sum(x1*prob))^2*prob) # 80
+var2 = sum((x2 - sum(x2*prob))^2*prob) # 20
+
+
+## Figure 1.8: three Correlation plots
+data2 = read.csv("/Users/lili/Downloads/match_player_corr_data.csv")
+# Give the correlation plots for every two variables
+pairs(data2)
+# Calculate the correlation coefficients for every two variables
+cor(data2) 
+# If you haven't insall package "ggplot2", need to run this first: install.packages("ggplot2") 
+library(ggplot2)
+setEPS()
+postscript("corr1.eps",width = 6, height = 6)
+# aes(x,y): indicate variables on x-axis and y-axis respectively;
+# geom_point(): plot points; 
+# theme_grey(base_size = 18): control the font size.
+ggplot(data2, aes(data2[,"gold_per_minute"], data2[,"deaths_per_minute"])) +
+  geom_point() + theme_grey(base_size = 18)+
+  xlab("Gold per minute") + ylab("Deaths per minute")
+dev.off()
+
+setEPS()
+postscript("corr2.eps",width = 6, height = 6)
+ggplot(data2, aes(data2[,"goldearned"], data2[,"totaldamagedealt"])) +
+  geom_point() + theme_grey(base_size = 18) +
+  xlab("Gold Earned") + ylab("Total Damage Dealt")
+dev.off()
+
+setEPS()
+postscript("corr3.eps",width = 6, height = 6)
+ggplot(data2, aes(data2[,"kills"], data2[,"deaths"])) +
+  geom_point() + theme_grey(base_size = 18)+
+  xlab("Kills") + ylab("Deaths")
+dev.off()
+
+
 ## This part will calculate the Transition matrices using all the crit data
 # Read data into R.
 data = read.csv("https://github.com/DoransLab/data/raw/master/crit_smoothing/crits.csv")
@@ -57,7 +131,6 @@ data = read.csv("https://github.com/DoransLab/data/raw/master/crit_smoothing/cri
 head(data)
 # Check the dimensions of data. "dim" will tell you this data set has 2700 rows and 9 colums.
 dim(data)
-
 # Assign the number of rows in the data to "n". "n" means the number of attacks in one game
 n = dim(data)[1]
 # Using for-loop to calculate transition matrix for each column.
